@@ -32,7 +32,17 @@ jobs:
       - name: Installer les dépendances
         run: npm install
 
-      - name: Créer le projet Android avec Capacitor
+      - name: Créer le dossier web
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          cp manifest.webmanifest www/manifest.webmanifest
+          cp sw.js www/sw.js
+          mkdir -p www/icons
+          cp icon-192.png www/icons/icon-192.png
+          cp icon-512.png www/icons/icon-512.png
+
+      - name: Créer le projet Android
         run: npx cap add android
 
       - name: Synchroniser Capacitor
