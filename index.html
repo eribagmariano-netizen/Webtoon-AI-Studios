@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<meta name="description" content="Webtoon AI Studio — créez vos projets, personnages, décors, scénarios, storyboards et prompts IA.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Webtoon AI Studio">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Webtoon AI Studio</title>
+<style>
+:root{--bg:#0b0d12;--panel:#121620;--panel2:#171c28;--line:#252c3b;--text:#f5f7fb;--muted:#9aa4b5;--accent:#7c5cff;--accent2:#a78bfa;--danger:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#0e1118;border-right:1px solid var(--line);padding:18px;position:fixed;inset:0 auto 0 0;z-index:20}
+.logo{font-weight:800;font-size:20px;margin-bottom:20px}.logo span{color:var(--accent)}
+.nav{display:grid;gap:7px}.nav button{border:1px solid transparent;background:transparent;color:#cbd2df;text-align:left;padding:11px 12px;border-radius:10px}.nav button:hover,.nav button.active{background:#191f2c;border-color:#2b3345;color:#fff}
+.main{margin-left:250px;width:calc(100% - 250px);padding:22px;max-width:1600px}.mobilebar{display:none}
+.page{display:none}.page.active{display:block}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}.top h1{margin:0;font-size:27px}.sub{color:var(--muted);font-size:13px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.card h3,.card h4{margin:0 0 12px}.stat{font-size:27px;font-weight:800}.muted{color:var(--muted)}
+label{display:block;font-size:12px;color:#aeb7c7;margin:0 0 6px}input,select,textarea{width:100%;background:#0d1119;color:var(--text);border:1px solid #2a3344;border-radius:9px;padding:10px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--accent)}textarea{min-height:100px;resize:vertical}
+.form{display:grid;gap:12px}.btn{border:1px solid #30394d;background:#1a2030;color:#fff;padding:9px 13px;border-radius:9px}.btn:hover{filter:brightness(1.12)}.primary{background:var(--accent);border-color:var(--accent)}.danger{background:#35171b;border-color:#63242b;color:#ffb5ba}.success{background:#12321f;border-color:#205f38;color:#a8f3bd}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.between{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.toolbar>*{max-width:300px}
+.thumb{width:78px;height:78px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#0b0e14}.avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;border:1px solid #353e52;background:#0d1119}
+.list{display:grid;gap:10px}.item{border:1px solid var(--line);background:#111621;border-radius:12px;padding:12px}.item:hover{border-color:#38435b}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#22293a;color:#c9d2e4;font-size:11px}.lock{color:#c4b5fd}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #31394b;border-radius:12px}
+.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.check{padding:9px;border:1px solid var(--line);border-radius:9px;background:#0e131d}.check input{width:auto;margin-right:6px}
+.preview{white-space:pre-wrap;background:#0a0e15;border:1px solid var(--line);border-radius:10px;padding:12px;color:#cfd6e4;font-size:12px;line-height:1.55}
+.panel{background:#0f141e;border:1px solid var(--line);border-radius:12px;padding:12px}.panelnum{font-size:12px;color:var(--accent2);font-weight:800}
+.refbox{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.refbox img{width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid #333c50}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.open{display:flex}.modalbox{background:#121722;border:1px solid #30394b;border-radius:15px;max-width:1000px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.small{font-size:12px}.dangerText{color:#fca5a5}
+@media(max-width:850px){.sidebar{display:none}.mobilebar{display:flex;position:sticky;top:0;z-index:30;background:#0e1118;border-bottom:1px solid var(--line);padding:12px;align-items:center;justify-content:space-between}.main{margin:0;width:100%;padding:14px}.g2,.g3,.g4{grid-template-columns:1fr}.top h1{font-size:22px}.checkgrid{grid-template-columns:1fr}}
+.episode-canvas{padding:6px}.editor-panel{background:#171b24;border:1px solid #30394b;border-radius:14px;overflow:hidden;margin:0 auto 18px;max-width:760px}.editor-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;background:#202634}.editor-toolbar strong{margin-right:auto}.panel-stage{position:relative;background:#0d0f14;min-height:420px}.panel-image{display:block;width:100%;height:auto}.panel-placeholder{min-height:420px;display:grid;place-content:center;text-align:center;color:#8d98ad;line-height:1.7}.speech-bubble{position:absolute;top:12%;left:8%;max-width:38%;padding:12px 15px;border-radius:18px;background:#fff;color:#111;font-weight:700;box-shadow:0 4px 14px #0007}.bubble-1{top:30%;left:54%;border-radius:18px 18px 4px 18px}.bubble-2{top:50%;left:8%;border-radius:18px 18px 18px 4px}.bubble-3{top:70%;left:54%;border-radius:8px}.editor-panel[draggable=true]{cursor:grab}.demo-box{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:16px;border:1px solid #34405a;background:#171d2a;border-radius:14px}.demo-box .btn{white-space:nowrap}@media(max-width:600px){.demo-box{flex-direction:column;align-items:stretch}}.bubble-list{padding:10px 12px;background:#111620;border-top:1px solid #30394b;display:grid;gap:8px}.bubble-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px;border:1px solid #30394b;border-radius:10px;background:#171d29}.bubble-controls label{font-size:12px;color:#aeb8ca}.bubble-controls input[type=range]{width:85px;vertical-align:middle}.bubble-controls select{background:#0e131c;color:#fff;border:1px solid #39445a;border-radius:7px;padding:5px}.bubble-thought{border-radius:50%;font-style:italic}.bubble-shout{border:3px solid #111;border-radius:6px;transform:rotate(-1deg);font-weight:900}.bubble-whisper{opacity:.72;font-size:15px!important;border:1px dashed #777}.studio-footer{margin:28px 0;text-align:center;color:#71809a;font-size:12px}.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5bd68b;margin-right:5px}</style>
+</head>
+<body>
+<div class="mobilebar"><strong>Webtoon <span style="color:#7c5cff">AI</span> Studio</strong><button class="btn" onclick="toggleMenu()">☰</button></div>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">Webtoon <span>AI</span> Studio</div>
+  <div id="nav" class="nav">
+    <button data-page="dashboard">🏠 Dashboard</button><button data-page="projects">📚 Mes projets</button>
+    <button data-page="characters">👥 Personnages</button><button data-page="decors">🌍 Décors</button>
+    <button data-page="outfits">👕 Tenues</button><button data-page="scenario">📝 Scénario</button>
+    <button data-page="storyboard">🎬 Storyboard</button><button data-page="generation">🎨 Génération IA</button>
+    <button data-page="bubbles">💬 Bulles</button><button data-page="editor">📱 Éditeur</button><button data-page="export">📤 Export</button>
+  </div>
+</aside>
+<main class="main">
+<section id="dashboard" class="page">
+<div class="demo-box" style="margin:14px 0">
+  <div>
+    <strong>🎬 Projet de démonstration</strong>
+    <div class="small muted">Charge un exemple complet pour parcourir tout le workflow de Webtoon AI Studio.</div>
+  </div>
+  <div class="row"><button class="btn primary" onclick="loadDemoProject()">✨ Charger la démo</button><button class="btn" onclick="exportProjectJSON()">⬇️ Projet JSON</button><button class="btn" onclick="openImport()">⬆️ Importer</button></div>
+</div>
+<div class="top"><div><h1>Dashboard</h1><div class="sub">Ton studio de création Webtoon.</div></div><button class="btn primary" onclick="go('projects')">+ Nouveau projet</button></div>
+<div class="grid g4" id="stats"></div><div class="grid g2" style="margin-top:14px"><div class="card"><h3>Projet actif</h3><div id="activeDash"></div></div><div class="card"><h3>Chaîne de production</h3><div class="muted">Projet → Personnages → Décors → Tenues → Scénario → Storyboard → IA → Bulles → Éditeur → Export</div></div></div>
+</section>
+
+<section id="projects" class="page">
+<div class="top"><div><h1>Mes projets</h1><div class="sub">Chaque projet possède ses propres personnages, décors, scènes et cases.</div></div><button class="btn primary" onclick="newProject()">+ Projet</button></div>
+<div class="grid g2"><div class="card"><h3>Créer / modifier</h3><form id="projectForm" class="form">
+<input type="hidden" id="projectId"><div><label>Titre</label><input id="pTitle" required placeholder="Ex. Les Héritiers du Néon"></div>
+<div class="grid g2"><div><label>Genre</label><input id="pGenre" placeholder="Action, romance..."></div><div><label>Style visuel</label><input id="pStyle" placeholder="Manhwa, anime, semi-réaliste..."></div></div>
+<div class="grid g2"><div><label>Format</label><select id="pFormat"><option>Webtoon vertical</option><option>Page classique</option><option>Storyboard</option></select></div><div><label>Statut</label><input value="En production" disabled></div></div>
+<div><label>Description</label><textarea id="pDesc" placeholder="Résumé de l'histoire..."></textarea></div><button class="btn primary">Enregistrer le projet</button></form></div>
+<div class="card"><h3>Projets</h3><div id="projectList" class="list"></div></div></div>
+</section>
+
+<section id="characters" class="page">
+<div class="top"><div><h1>Personnages</h1><div class="sub">Identité verrouillée, références, apparence et tenues liées au projet.</div></div><button class="btn primary" onclick="openCharacter()">+ Personnage</button></div>
+<div class="toolbar"><input id="charSearch" placeholder="🔎 Rechercher un personnage..." oninput="renderCharacters()"><select id="charRoleFilter" onchange="renderCharacters()"><option value="">Tous les rôles</option><option>Principal</option><option>Secondaire</option><option>Antagoniste</option><option>Figurant</option></select></div>
+<div id="characterList" class="grid g2"></div>
+</section>
+
+<section id="decors" class="page">
+<div class="top"><div><h1>Décors</h1><div class="sub">Bibliothèque des environnements de ton projet.</div></div><button class="btn primary" onclick="openDecor()">+ Décor</button></div>
+<div id="decorList" class="grid g2"></div>
+</section>
+
+<section id="outfits" class="page">
+<div class="top"><div><h1>Tenues</h1><div class="sub">Plusieurs tenues peuvent appartenir au même personnage.</div></div><button class="btn primary" onclick="openOutfit()">+ Tenue</button></div>
+<div id="outfitList" class="grid g2"></div>
+</section>
+
+<section id="scenario" class="page">
+<div class="top"><div><h1>Scénario</h1><div class="sub">Construis les scènes avec décor, personnages, tenue, action et dialogues.</div></div><button class="btn primary" onclick="openScene()">+ Scène</button></div>
+<div id="sceneList" class="list"></div>
+</section>
+
+<section id="storyboard" class="page">
+<div class="top"><div><h1>Storyboard</h1><div class="sub">Chaque case récupère automatiquement l'identité des personnages sélectionnés.</div></div><button class="btn primary" onclick="buildStoryboard()">⚡ Générer le storyboard</button></div>
+<div id="storyboardList" class="list"></div>
+</section>
+
+<section id="generation" class="page">
+<div class="top"><div><h1>🎨 Prompts IA</h1><div class="sub">Prépare et copie les prompts complets ici, puis envoie-les dans ChatGPT pour générer tes images.</div></div></div>
+<div class="grid g2">
+  <div class="card">
+    <h3>🎬 Choisir une case</h3>
+    <div><label>Case du storyboard</label><select id="genPanelSelect" onchange="loadGenerationPanel()"></select></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div><label>Format</label><select id="genSize"><option value="1024x1536">Vertical — 1024×1536</option><option value="1024x1024">Carré — 1024×1024</option><option value="1536x1024">Horizontal — 1536×1024</option></select></div>
+      <div><label>Qualité</label><select id="genQuality"><option value="auto">Auto</option><option value="high">Haute</option><option value="medium">Moyenne</option><option value="low">Rapide</option></select></div>
+    </div>
+    <div class="grid g3" style="margin-top:12px">
+      <div><label>Pose</label><input id="genPose" placeholder="Ex. debout, assis, marche..."></div>
+      <div><label>Émotion</label><input id="genEmotion" placeholder="Ex. calme, colère, peur..."></div>
+      <div><label>Caméra</label><input id="genCamera" placeholder="Ex. gros plan, plongée..."></div>
+    </div>
+    <div style="margin-top:12px"><label>Direction artistique supplémentaire</label><textarea id="genExtra" placeholder="Ex. cadrage cinématographique, lumière dramatique, couleurs froides..."></textarea></div>
+    <div id="genReferences" class="panel" style="margin-top:12px">🔒 Références d'identité : aucune</div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" onclick="copyGenerationPrompt()">📋 Copier le prompt complet</button><button class="btn success" onclick="copyPromptForChatGPT()">🤖 Copier pour ChatGPT</button></div>
+    <div id="genStatus" class="small muted" style="margin-top:10px"></div><div class="small muted" style="margin-top:10px">💡 Cette application ne génère plus directement les images : elle construit les prompts. Tu peux ensuite me les envoyer ici pour que je génère chaque case.</div>
+  </div>
+  <div class="card">
+    <h3>🧠 Prompt final — prêt à copier</h3>
+    <div id="generationInfo" class="preview">Aucune case sélectionnée.</div>
+  </div>
+</div>
+<div class="card" style="margin-top:14px"><h3>🖼️ Résultat</h3><div id="generationResult" class="empty">L'image générée apparaîtra ici.</div></div>
+</section>
+
+<section id="bubbles" class="page"><div class="top"><div><h1>Bulles & Dialogues</h1><div class="sub">Les dialogues du scénario seront reliés aux cases.</div></div></div><div class="card" id="bubbleInfo"></div></section>
+<section id="editor" class="page">
+<div class="top"><div><h1>Éditeur Webtoon</h1><div class="sub">Assemble ton épisode vertical, réorganise les cases et affiche les dialogues.</div></div></div>
+<div id="editorRoot"></div><div class="studio-footer"><span class="status-dot"></span>Webtoon AI Studio — données sauvegardées localement dans ce navigateur</div>
+</section>
+<section id="export" class="page"><div class="top"><div><h1>Export</h1><div class="sub">Sauvegarde et export du projet.</div></div></div><div class="card"><button class="btn primary" onclick="downloadProject()">⬇️ Exporter les données JSON</button><button class="btn" onclick="window.print()">🖨️ Imprimer / PDF</button><hr><div class="muted">Les images de référence sont incluses dans le JSON si elles sont stockées dans le navigateur.</div></div></section>
+</main></div>
+
+<div id="modal" class="modal"><div class="modalbox"><div class="between"><h2 id="modalTitle">Formulaire</h2><button class="btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+
+<script>
+const KEY="webtoonAIStudio_v5";
+let state=JSON.parse(localStorage.getItem(KEY)||'{"projects":[],"activeProjectId":null}');
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function uid(p="id"){return p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
+function project(){return state.projects.find(p=>p.id===state.activeProjectId)}
+function esc(v=""){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function go(page){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(page).classList.add("active");document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===page));renderAll()}
+function toggleMenu(){const s=document.querySelector(".sidebar");s.style.display=s.style.display==="block"?"none":"block"}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+function ensure(){if(!state.projects.length){let p={id:uid("pr"),title:"Mon premier Webtoon",genre:"Action",style:"Manhwa semi-réaliste",format:"Webtoon vertical",description:"Projet de démonstration.",characters:[],decors:[],outfits:[],scenes:[],panels:[]};state.projects.push(p);state.activeProjectId=p.id;save()}else if(!project())state.activeProjectId=state.projects[0].id}
+ensure();
+
+function renderAll(){renderDashboard();renderProjects();renderCharacters();renderDecors();renderOutfits();renderScenes();renderStoryboard();renderGeneration();renderBubbles();renderEditor()}
+
+
+function exportProjectJSON(){
+  let p=project();if(!p)return;
+  let blob=new Blob([JSON.stringify(p,null,2)],{type:"application/json"});
+  let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.title||"webtoon-project").replace(/[^\w-]+/g,"_")+".json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importProjectJSON(file){
+  if(!file)return;
+  let reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      let p=JSON.parse(reader.result);
+      if(!p.id||!p.title||!Array.isArray(p.characters)||!Array.isArray(p.scenes))throw new Error("Fichier de projet invalide.");
+      p.id=uid();p.characters=p.characters||[];p.decors=p.decors||[];p.outfits=p.outfits||[];p.scenes=p.scenes||[];p.panels=p.panels||[];
+      state.projects.push(p);state.activeProjectId=p.id;save();renderAll();go("dashboard");alert("Projet importé.");
+    }catch(e){alert("Import impossible : "+e.message)}
+  };
+  reader.readAsText(file);
+}
+function openImport(){
+  let input=document.createElement("input");input.type="file";input.accept=".json,application/json";input.onchange=()=>importProjectJSON(input.files[0]);input.click();
+}
+function loadDemoProject(){
+  let existing=state.projects.find(p=>p.title==="L'Héritier de l'Ombre");
+  if(existing){
+    state.activeProjectId=existing.id;
+    save();
+    renderAll();
+    go("dashboard");
+    alert("Le projet démo est déjà présent. Il est maintenant actif.");
+    return;
+  }
+
+  const pid=uid(), kael=uid(), maya=uid(), raven=uid();
+  const rain=uid(), school=uid(), forest=uid(), warehouse=uid();
+  const outfitKael=uid(), outfitMaya=uid(), outfitRaven=uid();
+  const s1=uid(), s2=uid(), s3=uid();
+
+  const demo={
+    id:pid,
+    title:"L'Héritier de l'Ombre",
+    genre:"Action / Fantastique / Drame",
+    style:"Manhwa semi-réaliste, cinématique, sombre, très détaillé",
+    format:"Webtoon vertical 9:16",
+    description:"Épisode 1 — Le réveil. Une nuit de pluie, Kael découvre un pouvoir mystérieux qui attire l'attention d'un ennemi inconnu.",
+    characters:[
+      {id:kael,name:"Kael",role:"Protagoniste",age:"19",description:"Jeune homme calme mais déterminé, marqué par une étrange énergie qui vient de se réveiller en lui.",image:"",
+       identity:{faceShape:"ovale",forehead:"moyen",eyebrows:"droites et épaisses",eyes:"regard intense, yeux sombres",nose:"droite",lips:"naturelles",ears:"normales",jaw:"mâchoire légèrement marquée",skin:"peau brune naturelle",hair:"cheveux courts texturés, dégradé bas",facialHair:"aucune",marks:"petite cicatrice près du sourcil droit",body:"silhouette athlétique",expression:"calme, parfois inquiet",constraints:"conserver exactement l'identité du personnage entre les cases."}},
+      {id:maya,name:"Maya",role:"Amie / Rivale",age:"19",description:"Jeune femme intelligente qui comprend immédiatement que le pouvoir de Kael est dangereux.",image:"",
+       identity:{faceShape:"ovale",forehead:"moyen",eyebrows:"fines",eyes:"grands yeux sombres",nose:"fine",lips:"naturelles",ears:"normales",jaw:"douce",skin:"peau brune",hair:"longs cheveux noirs légèrement ondulés",facialHair:"aucune",marks:"petit grain de beauté sous l'œil gauche",body:"silhouette élancée",expression:"alerte et déterminée",constraints:"conserver exactement l'identité du personnage entre les cases."}},
+      {id:raven,name:"Raven",role:"Antagoniste",age:"inconnu",description:"Silhouette mystérieuse qui observe Kael depuis les hauteurs.",image:"",
+       identity:{faceShape:"anguleux",forehead:"caché en partie",eyebrows:"peu visibles",eyes:"regard froid",nose:"droite",lips:"fines",ears:"normales",jaw:"très marquée",skin:"peau sombre",hair:"cheveux noirs courts",facialHair:"légère barbe",marks:"aucune",body:"grand et athlétique",expression:"impassible",constraints:"préserver son apparence sombre et mystérieuse."}}
+    ],
+    decors:[
+      {id:rain,name:"Rue de la ville — Nuit",time:"Nuit",mood:"Tension",weather:"Pluie forte",description:"Rue moderne mouillée, néons reflétés dans l'asphalte, immeubles sombres et pluie dense."},
+      {id:school,name:"Lycée — Après-midi",time:"Après-midi",mood:"Calme",weather:"Ciel couvert",description:"Couloir de lycée moderne, lumière naturelle, casiers métalliques et élèves en arrière-plan."},
+      {id:forest,name:"Forêt interdite — Nuit",time:"Nuit",mood:"Mystérieux",weather:"Brume",description:"Forêt dense, arbres gigantesques, brume basse et faible lumière lunaire."},
+      {id:warehouse,name:"Entrepôt abandonné — Nuit",time:"Nuit",mood:"Menace",weather:"Pluie légère",description:"Ancien entrepôt industriel, fenêtres cassées, flaques d'eau et lumière rouge lointaine."}
+    ],
+    outfits:[
+      {id:outfitKael,name:"Tenue de Kael",characterId:kael,category:"Streetwear",description:"Hoodie noir légèrement oversize, pantalon cargo sombre, baskets noires et bracelet métallique."},
+      {id:outfitMaya,name:"Tenue de Maya",characterId:maya,category:"Casual",description:"Veste courte sombre, t-shirt clair, pantalon cargo et baskets."},
+      {id:outfitRaven,name:"Tenue de Raven",characterId:raven,category:"Dark",description:"Long manteau noir, col haut, pantalon sombre et bottes."}
+    ],
+    scenes:[
+      {id:s1,title:"Le réveil",decorId:rain,characterIds:[kael,maya],description:"Kael est sous une pluie intense. Une lumière rouge apparaît dans sa main. Maya arrive et comprend immédiatement que quelque chose ne va pas.",dialogues:[
+        {text:"Pourquoi… est-ce que je suis encore vivant ?"},
+        {text:"Kael ! Ne bouge surtout pas !"},
+        {text:"Maya… qu'est-ce qui m'arrive ?"}
+      ],pose:"Kael debout sous la pluie, main levée devant lui",emotion:"confusion puis inquiétude",camera:"plans rapprochés cinématiques"},
+      {id:s2,title:"Le témoin",decorId:rain,characterIds:[kael,maya,raven],description:"Kael et Maya regardent vers les toits. Une silhouette observe la scène depuis un immeuble.",dialogues:[
+        {text:"Tu as vu ça ?"},
+        {text:"Oui. Et quelqu'un nous observe."},
+        {text:"Enfin… l'héritier s'est réveillé."}
+      ],pose:"Kael et Maya regardant vers le toit, Raven immobile au loin",emotion:"méfiance et menace",camera:"contre-plongée dramatique"},
+      {id:s3,title:"La promesse",decorId:warehouse,characterIds:[kael,raven],description:"Dans un entrepôt abandonné, Kael fait face à Raven. L'énergie rouge entoure son bras.",dialogues:[
+        {text:"Qui es-tu ?"},
+        {text:"La question n'est pas qui je suis…"},
+        {text:"…mais pourquoi ton pouvoir est revenu."}
+      ],pose:"face-à-face tendu, Kael prêt à combattre",emotion:"colère contenue",camera:"plan américain, légère contre-plongée"}
+    ],
+    panels:[]
+  };
+
+  // 7 storyboard panels with explicit prompts, linked to scenes
+  const panelData=[
+    [s1,"La pluie tombait sans interruption sur la ville.","Kael sous une pluie intense dans une rue moderne nocturne.","plan large vertical"],
+    [s1,"Pourquoi… est-ce que je suis encore vivant ?","Kael regarde sa main avec stupeur alors qu'une lumière rouge apparaît.","gros plan"],
+    [s1,"Maya !","Maya arrive en courant sous la pluie et tend la main vers Kael.","plan moyen dynamique"],
+    [s1,"Ne bouge surtout pas !","Maya fixe Kael avec inquiétude tandis que l'énergie rouge se développe.","plan rapproché"],
+    [s2,"Une silhouette observait la scène depuis le toit.","Raven debout sur un toit, observant Kael et Maya sous la pluie.","contre-plongée"],
+    [s2,"Enfin… l'héritier s'est réveillé.","Gros plan sur Raven avec la ville floue derrière lui.","très gros plan"],
+    [s3,"Qui es-tu ?","Kael face à Raven dans l'entrepôt abandonné, énergie rouge autour du bras.","plan américain cinématique"]
+  ];
+  demo.panels=panelData.map((d,i)=>({
+    id:uid(),sceneId:d[0],index:i,sentence:d[1],
+    prompt:`${demo.style}. Webtoon vertical. ${d[2]} Décor cohérent avec la scène. ${d[3]}. Préserver strictement l'identité de chaque personnage. Texture de peau naturelle, lumière cinématique, composition lisible, narration visuelle claire.`,
+    dialogues: demo.scenes.find(s=>s.id===d[0])?.dialogues?.slice(i%2,(i%2)+1)||[]
+  }));
+
+  state.projects.push(demo);
+  state.activeProjectId=pid;
+  save();
+  renderAll();
+  go("dashboard");
+  alert("✨ Démo chargée ! Explore maintenant Personnages → Décors → Scénario → Storyboard → Éditeur.");
+}
+function renderDashboard(){let p=project();let s=[["Projets",state.projects.length],["Personnages",p?.characters.length||0],["Scènes",p?.scenes.length||0],["Cases",p?.panels.length||0]];document.getElementById("stats").innerHTML=s.map(x=>`<div class="card"><div class="muted">${x[0]}</div><div class="stat">${x[1]}</div></div>`).join("");document.getElementById("activeDash").innerHTML=p?`<strong>${esc(p.title)}</strong><br><span class="muted">${esc(p.genre)} · ${esc(p.style)}</span>`:"Aucun projet"}
+function renderProjects(){let p=project();document.getElementById("projectList").innerHTML=state.projects.map(x=>`<div class="item"><div class="between"><div><strong>${esc(x.title)}</strong><div class="small muted">${esc(x.genre)} · ${esc(x.style)}</div></div>${x.id===state.activeProjectId?'<span class="badge">ACTIF</span>':''}</div><div class="row" style="margin-top:9px"><button class="btn" onclick="selectProject('${x.id}')">Ouvrir</button><button class="btn" onclick="editProject('${x.id}')">Modifier</button><button class="btn danger" onclick="deleteProject('${x.id}')">Supprimer</button></div></div>`).join("")||'<div class="empty">Aucun projet.</div>'}
+function resetProjectForm(){["projectId","pTitle","pGenre","pStyle","pDesc"].forEach(id=>document.getElementById(id).value="");document.getElementById("pFormat").value="Webtoon vertical"}
+function newProject(){resetProjectForm();document.getElementById("pTitle").focus()}
+function editProject(id){let p=state.projects.find(x=>x.id===id);document.getElementById("projectId").value=p.id;document.getElementById("pTitle").value=p.title;document.getElementById("pGenre").value=p.genre;document.getElementById("pStyle").value=p.style;document.getElementById("pFormat").value=p.format;document.getElementById("pDesc").value=p.description;go("projects")}
+document.getElementById("projectForm").onsubmit=e=>{e.preventDefault();let id=document.getElementById("projectId").value;let data={title:pTitle.value.trim(),genre:pGenre.value,style:pStyle.value,format:pFormat.value,description:pDesc.value};if(id){Object.assign(state.projects.find(p=>p.id===id),data)}else{let p={id:uid("pr"),...data,characters:[],decors:[],outfits:[],scenes:[],panels:[]};state.projects.push(p);state.activeProjectId=p.id}save();resetProjectForm()}
+function selectProject(id){state.activeProjectId=id;save();go("dashboard")}
+function deleteProject(id){if(!confirm("Supprimer ce projet et toutes ses données ?"))return;state.projects=state.projects.filter(p=>p.id!==id);state.activeProjectId=state.projects[0]?.id||null;save();if(!state.projects.length)ensure()}
+
+function openModal(title,body){modalTitle.textContent=title;modalBody.innerHTML=body;modal.classList.add("open")}
+function closeModal(){modal.classList.remove("open")}
+
+function openCharacter(id=null){
+let p=project();let c=id?p.characters.find(x=>x.id===id):null;
+openModal(c?"Modifier le personnage":"Créer un personnage",`
+<form id="charForm" class="form">
+<input type="hidden" id="cId" value="${c?.id||""}">
+<div class="grid g3"><div><label>Nom</label><input id="cName" required value="${esc(c?.name||"")}" placeholder="Nom du personnage"></div><div><label>Rôle</label><select id="cRole">${["Principal","Secondaire","Antagoniste","Figurant"].map(x=>`<option ${c?.role===x?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Âge</label><input id="cAge" value="${esc(c?.age||"")}"></div></div>
+<hr><h3>🔒 Identité faciale</h3><div class="grid g2">
+<div><label>Forme du visage</label><input id="faceShape" value="${esc(c?.identity?.faceShape||"")}"></div><div><label>Front</label><input id="forehead" value="${esc(c?.identity?.forehead||"")}"></div>
+<div><label>Sourcils</label><input id="eyebrows" value="${esc(c?.identity?.eyebrows||"")}"></div><div><label>Yeux</label><input id="eyes" value="${esc(c?.identity?.eyes||"")}"></div>
+<div><label>Nez</label><input id="nose" value="${esc(c?.identity?.nose||"")}"></div><div><label>Lèvres / bouche</label><input id="lips" value="${esc(c?.identity?.lips||"")}"></div>
+<div><label>Oreilles</label><input id="ears" value="${esc(c?.identity?.ears||"")}"></div><div><label>Mâchoire / menton</label><input id="jaw" value="${esc(c?.identity?.jaw||"")}"></div>
+</div>
+<div class="grid g2"><div><label>Teint / peau</label><input id="skin" value="${esc(c?.identity?.skin||"")}"></div><div><label>Cheveux</label><input id="hair" value="${esc(c?.identity?.hair||"")}"></div><div><label>Pilosité</label><input id="facialHair" value="${esc(c?.identity?.facialHair||"")}"></div><div><label>Signes distinctifs</label><input id="marks" value="${esc(c?.identity?.marks||"")}"></div></div>
+<div><label>Proportions / morphologie</label><input id="body" value="${esc(c?.identity?.body||"")}"></div>
+<div><label>Expression habituelle</label><input id="expression" value="${esc(c?.identity?.expression||"")}"></div>
+<div><label>Règles de cohérence</label><textarea id="constraints">${esc(c?.identity?.constraints||"Ne pas changer le visage, l’âge apparent, le teint, les proportions ni les traits distinctifs. Les variations de pose, émotion et tenue ne doivent pas modifier l’identité.")}</textarea></div>
+<hr><h3>🧠 Description complète</h3><textarea id="cDescription" placeholder="Description visuelle globale...">${esc(c?.description||"")}</textarea>
+<div><label>Référence visage / personnage</label><input id="cImage" type="file" accept="image/*"></div>
+<div id="refPreview">${c?.image?`<div class="refbox"><img src="${c.image}"><span class="muted">Référence actuelle. Une nouvelle image la remplacera.</span></div>`:""}</div>
+<button class="btn primary">Enregistrer l'identité</button></form>`);
+charForm.onsubmit=async e=>{e.preventDefault();let old=c;let image=old?.image||"";let file=cImage.files[0];if(file)image=await fileToData(file);let obj={id:old?.id||uid("ch"),name:cName.value.trim(),role:cRole.value,age:cAge.value,description:cDescription.value,image,identity:{faceShape:faceShape.value,forehead:forehead.value,eyebrows:eyebrows.value,eyes:eyes.value,nose:nose.value,lips:lips.value,ears:ears.value,jaw:jaw.value,skin:skin.value,hair:hair.value,facialHair:facialHair.value,marks:marks.value,body:body.value,expression:expression.value,constraints:constraints.value}};if(old)Object.assign(old,obj);else p.characters.push(obj);save();closeModal()}
+}
+function fileToData(file){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+function renderCharacters(){let p=project(),q=(charSearch?.value||"").toLowerCase(),role=charRoleFilter?.value||"";let arr=(p?.characters||[]).filter(c=>(!q||c.name.toLowerCase().includes(q))&&(!role||c.role===role));characterList.innerHTML=arr.map(c=>`<div class="card"><div class="between"><div class="row">${c.image?`<img class="avatar" src="${c.image}">`:`<div class="avatar"></div>`}<div><h3 style="margin:0">${esc(c.name)}</h3><span class="badge">${esc(c.role)}</span> <span class="badge lock">🔒 ID verrouillée</span></div></div><span class="small muted">${c.age?esc(c.age)+" ans":""}</span></div><p class="muted small">${esc(c.description||"Aucune description.")}</p><div class="small">Visage: ${esc(c.identity?.faceShape||"non défini")} · Yeux: ${esc(c.identity?.eyes||"non défini")}</div><div class="row" style="margin-top:10px"><button class="btn" onclick="openCharacter('${c.id}')">Modifier</button><button class="btn" onclick="openIdentityPrompt('${c.id}')">Voir identité</button><button class="btn danger" onclick="deleteCharacter('${c.id}')">Supprimer</button></div></div>`).join("")||'<div class="empty">Aucun personnage. Crée ton premier profil d’identité.</div>'}
+function deleteCharacter(id){if(!confirm("Supprimer ce personnage ?"))return;let p=project();p.characters=p.characters.filter(c=>c.id!==id);p.outfits=p.outfits.filter(o=>o.characterId!==id);p.scenes.forEach(s=>s.characterIds=s.characterIds.filter(x=>x!==id));save()}
+function openIdentityPrompt(id){let c=project().characters.find(x=>x.id===id);openModal("Bloc d'identité verrouillée",`<div class="preview">${esc(identityBlock(c))}</div><button class="btn primary" style="margin-top:12px" onclick="closeModal()">Fermer</button>`)}
+function identityBlock(c){let i=c.identity||{};return `STRICT CHARACTER IDENTITY LOCK — ${c.name}\nPreserve the exact same character identity across all panels.\nFace shape: ${i.faceShape||"not specified"}\nForehead: ${i.forehead||"not specified"}\nEyebrows: ${i.eyebrows||"not specified"}\nEyes: ${i.eyes||"not specified"}\nNose: ${i.nose||"not specified"}\nLips/mouth: ${i.lips||"not specified"}\nEars: ${i.ears||"not specified"}\nJaw/chin: ${i.jaw||"not specified"}\nSkin: ${i.skin||"not specified"}\nHair: ${i.hair||"not specified"}\nFacial hair: ${i.facialHair||"not specified"}\nBody/proportions: ${i.body||"not specified"}\nDistinctive marks: ${i.marks||"none specified"}\nUsual expression: ${i.expression||"not specified"}\nReference image: ${c.image?"USE THE PROVIDED CHARACTER REFERENCE IMAGE AS THE PRIMARY IDENTITY SOURCE.":"none"}\nConstraints: ${i.constraints||"Do not change identity."}`}
+
+function openDecor(id=null){let p=project(),d=id?p.decors.find(x=>x.id===id):null;openModal(d?"Modifier le décor":"Créer un décor",`<form id="decorForm" class="form"><input type="hidden" id="dId" value="${d?.id||""}"><div class="grid g2"><div><label>Nom</label><input id="dName" required value="${esc(d?.name||"")}"></div><div><label>Moment</label><input id="dTime" value="${esc(d?.time||"")}"></div><div><label>Ambiance</label><input id="dMood" value="${esc(d?.mood||"")}"></div><div><label>Météo</label><input id="dWeather" value="${esc(d?.weather||"")}"></div></div><div><label>Description</label><textarea id="dDesc">${esc(d?.description||"")}</textarea></div><button class="btn primary">Enregistrer</button></form>`);decorForm.onsubmit=e=>{e.preventDefault();let obj={id:d?.id||uid("de"),name:dName.value,time:dTime.value,mood:dMood.value,weather:dWeather.value,description:dDesc.value};if(d)Object.assign(d,obj);else p.decors.push(obj);save();closeModal()}}
+function renderDecors(){let p=project();decorList.innerHTML=(p?.decors||[]).map(d=>`<div class="card"><h3>${esc(d.name)}</h3><div class="small muted">${esc(d.time)} · ${esc(d.mood)} · ${esc(d.weather)}</div><p>${esc(d.description)}</p><div class="row"><button class="btn" onclick="openDecor('${d.id}')">Modifier</button><button class="btn danger" onclick="deleteDecor('${d.id}')">Supprimer</button></div></div>`).join("")||'<div class="empty">Aucun décor.</div>'}
+function deleteDecor(id){let p=project();p.decors=p.decors.filter(x=>x.id!==id);p.scenes.forEach(s=>{if(s.decorId===id)s.decorId=""});save()}
+
+function openOutfit(id=null){let p=project(),o=id?p.outfits.find(x=>x.id===id):null;openModal(o?"Modifier la tenue":"Créer une tenue",`<form id="outfitForm" class="form"><input type="hidden" id="oId" value="${o?.id||""}"><div class="grid g2"><div><label>Nom de la tenue</label><input id="oName" required value="${esc(o?.name||"")}"></div><div><label>Personnage</label><select id="oChar">${(p.characters||[]).map(c=>`<option value="${c.id}" ${o?.characterId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div></div><div><label>Catégorie</label><input id="oCat" placeholder="Casual, combat, uniforme..." value="${esc(o?.category||"")}"></div><div><label>Description détaillée</label><textarea id="oDesc">${esc(o?.description||"")}</textarea></div><button class="btn primary">Enregistrer</button></form>`);outfitForm.onsubmit=e=>{e.preventDefault();let obj={id:o?.id||uid("ou"),name:oName.value,characterId:oChar.value,category:oCat.value,description:oDesc.value};if(o)Object.assign(o,obj);else p.outfits.push(obj);save();closeModal()}}
+function renderOutfits(){let p=project();outfitList.innerHTML=(p?.outfits||[]).map(o=>{let c=p.characters.find(x=>x.id===o.characterId);return `<div class="card"><div class="between"><h3>${esc(o.name)}</h3><span class="badge">${esc(o.category)}</span></div><div class="small muted">👤 ${esc(c?.name||"Personnage supprimé")}</div><p>${esc(o.description)}</p><div class="row"><button class="btn" onclick="openOutfit('${o.id}')">Modifier</button><button class="btn danger" onclick="deleteOutfit('${o.id}')">Supprimer</button></div></div>`}).join("")||'<div class="empty">Aucune tenue.</div>'}
+function deleteOutfit(id){let p=project();p.outfits=p.outfits.filter(x=>x.id!==id);save()}
+
+function openScene(id=null){let p=project(),s=id?p.scenes.find(x=>x.id===id):null;openModal(s?"Modifier la scène":"Créer une scène",`<form id="sceneForm" class="form"><input type="hidden" id="sId" value="${s?.id||""}"><div><label>Titre</label><input id="sTitle" required value="${esc(s?.title||"")}"></div><div><label>Décor</label><select id="sDecor"><option value="">— Aucun —</option>${p.decors.map(d=>`<option value="${d.id}" ${s?.decorId===d.id?"selected":""}>${esc(d.name)}</option>`).join("")}</select></div><div><label>Personnages présents</label><div class="checkgrid">${p.characters.map(c=>`<label class="check"><input type="checkbox" name="chars" value="${c.id}" ${(s?.characterIds||[]).includes(c.id)?"checked":""}>${esc(c.name)}</label>`).join("")||"<span class='muted'>Crée d'abord un personnage.</span>"}</div></div><div><label>Action / mise en scène</label><textarea id="sDesc" placeholder="Décris précisément ce qui se passe...">${esc(s?.description||"")}</textarea></div><div><label>Dialogues / monologues</label><textarea id="sDialogues" placeholder="Nom: dialogue...">${esc(s?.dialogues||"")}</textarea></div><button class="btn primary">Enregistrer la scène</button></form>`);sceneForm.onsubmit=e=>{e.preventDefault();let ids=[...document.querySelectorAll('input[name="chars"]:checked')].map(x=>x.value);let obj={id:s?.id||uid("sc"),title:sTitle.value,decorId:sDecor.value,characterIds:ids,description:sDesc.value,dialogues:sDialogues.value};if(s)Object.assign(s,obj);else p.scenes.push(obj);save();closeModal()}}
+function renderScenes(){let p=project();sceneList.innerHTML=(p?.scenes||[]).map((s,i)=>{let d=p.decors.find(x=>x.id===s.decorId);let chars=s.characterIds.map(id=>p.characters.find(c=>c.id===id)?.name).filter(Boolean);return `<div class="item"><div class="between"><div><strong>Scène ${i+1} — ${esc(s.title)}</strong><div class="small muted">🌍 ${esc(d?.name||"Aucun décor")} · 👥 ${chars.map(esc).join(", ")||"Aucun personnage"}</div></div><span class="badge">${(p.panels||[]).filter(x=>x.sceneId===s.id).length} cases</span></div><p>${esc(s.description)}</p><div class="preview">${esc(s.dialogues||"Aucun dialogue")}</div><div class="row" style="margin-top:10px"><button class="btn" onclick="openScene('${s.id}')">Modifier</button><button class="btn danger" onclick="deleteScene('${s.id}')">Supprimer</button></div></div>`}).join("")||'<div class="empty">Aucune scène. Crée ton premier chapitre/scène.</div>'}
+function deleteScene(id){let p=project();p.scenes=p.scenes.filter(x=>x.id!==id);p.panels=p.panels.filter(x=>x.sceneId!==id);save()}
+
+function selectedOutfitFor(c){return project().outfits.find(o=>o.characterId===c.id)}
+function makePrompt(p,s,sentence,index){let d=p.decors.find(x=>x.id===s.decorId);let chars=s.characterIds.map(id=>p.characters.find(c=>c.id===id)).filter(Boolean);let blocks=chars.map(c=>{let outfit=selectedOutfitFor(c);return identityBlock(c)+"\\nSCENE OUTFIT: "+(outfit?.name||c.clothes||"Choose an appropriate outfit while preserving identity.")+(outfit?.description?"\\nOUTFIT DETAILS: "+outfit.description:"")}).join("\\n\\n");return `WEBTOON PANEL ${index}\\nProject style: ${p.style}\\nFormat: ${p.format}\\nDECOR: ${d?.name||"unspecified"} — ${d?.description||""}\\nTIME/MOOD: ${d?.time||""} / ${d?.mood||""}\\nCHARACTERS:\\n${blocks||"none"}\\nACTION: ${sentence}\\nDIALOGUES: ${s.dialogues||"none"}\\nVISUAL CONTINUITY: keep character identity, proportions and reference appearance consistent with previous panels. Do not alter identity to fit the pose, emotion or camera angle.`}
+function buildStoryboard(){let p=project();if(!p)return;let panels=[];p.scenes.forEach(s=>{let sentences=(s.description||"").split(/(?<=[.!?])\\s+/).map(x=>x.trim()).filter(Boolean);if(!sentences.length)sentences=["Establishing shot of the scene."];sentences.forEach((sentence,i)=>panels.push({id:uid("pa"),sceneId:s.id,index:i+1,sentence,prompt:makePrompt(p,s,sentence,i+1),dialogues:s.dialogues||""}))});p.panels=panels;save();go("storyboard")}
+function renderStoryboard(){let p=project();storyboardList.innerHTML=(p?.panels||[]).map((x,i)=>`<div class="item"><div class="between"><div><span class="panelnum">CASE ${i+1}</span> · ${esc(p.scenes.find(s=>s.id===x.sceneId)?.title||"")}</div><button class="btn" onclick="showGeneration('${x.id}')">🎨 Préparer IA</button></div><p>${esc(x.sentence)}</p><div class="preview">${esc(x.prompt)}</div></div>`).join("")||'<div class="empty">Aucun storyboard. Crée des scènes puis clique sur « Générer le storyboard ».</div>'}
+let selectedGenerationPanelId="";
+function showGeneration(id){selectedGenerationPanelId=id;go("generation");setTimeout(()=>{document.getElementById("genPanelSelect").value=id;loadGenerationPanel()},0)}
+function renderGeneration(){
+  let p=project(), sel=document.getElementById("genPanelSelect");
+  if(!sel)return;
+  sel.innerHTML=(p?.panels||[]).map((x,i)=>`<option value="${x.id}">Case ${i+1} — ${esc(x.sentence.slice(0,80))}</option>`).join("");
+  if(selectedGenerationPanelId && p?.panels.some(x=>x.id===selectedGenerationPanelId)) sel.value=selectedGenerationPanelId;
+  else if(p?.panels?.length) selectedGenerationPanelId=p.panels[0].id;
+  loadGenerationPanel();
+}
+function getGenerationRefs(panel){
+  let p=project(), scene=p?.scenes.find(s=>s.id===panel?.sceneId);
+  return (scene?.characterIds||[]).map(id=>p.characters.find(c=>c.id===id)).filter(c=>c?.image).map(c=>({id:c.id,name:c.name,image:c.image}));
+}
+function loadGenerationPanel(){
+  let p=project(), id=document.getElementById("genPanelSelect")?.value||selectedGenerationPanelId, x=p?.panels.find(z=>z.id===id);
+  selectedGenerationPanelId=id||"";
+  document.getElementById("generationInfo").textContent=x?.prompt||"Aucune case sélectionnée. Génère d'abord le storyboard.";
+  let refs=getGenerationRefs(x);
+  document.getElementById("genReferences").innerHTML=refs.length
+    ? `<strong>🔒 Références d'identité (${refs.length})</strong><div class="row" style="margin-top:8px">${refs.map(r=>`<div class="row"><img class="avatar" src="${r.image}" title="${esc(r.name)}"><span class="small">${esc(r.name)}</span></div>`).join("")}</div><div class="small muted" style="margin-top:8px">Ces références sont à joindre ici dans ChatGPT avec le prompt pour renforcer la cohérence visuelle.</div>`
+    : "🔒 Références d'identité : aucune. Ajoute une image de référence aux personnages.";
+}
+function copyToClipboard(text){
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  const ta=document.createElement("textarea");
+  ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+  return Promise.resolve();
+}
+
+async function copyGenerationPrompt(){
+  const info=document.getElementById("generationInfo");
+  const text=info?.textContent?.trim()||"";
+  const status=document.getElementById("genStatus");
+  if(!text || text.startsWith("Aucune case")){
+    status.textContent="Sélectionne d'abord une case du storyboard.";
+    return;
+  }
+  try{
+    await copyToClipboard(text);
+    status.textContent="✅ Prompt complet copié. Tu peux maintenant le coller dans ChatGPT.";
+  }catch(e){
+    status.textContent="Impossible de copier automatiquement. Sélectionne le texte et copie-le manuellement.";
+  }
+}
+
+async function copyPromptForChatGPT(){
+  const p=project();
+  const id=document.getElementById("genPanelSelect")?.value||selectedGenerationPanelId;
+  const panel=p?.panels.find(x=>x.id===id);
+  const status=document.getElementById("genStatus");
+  if(!panel){
+    status.textContent="Sélectionne d'abord une case du storyboard.";
+    return;
+  }
+
+  const refs=getGenerationRefs(panel);
+  const pose=document.getElementById("genPose").value.trim();
+  const emotion=document.getElementById("genEmotion").value.trim();
+  const camera=document.getElementById("genCamera").value.trim();
+  const extra=document.getElementById("genExtra").value.trim();
+
+  const prompt = panel.prompt
+    +(pose?"\nPOSE: "+pose:"")
+    +(emotion?"\nEMOTION: "+emotion:"")
+    +(camera?"\nCAMERA: "+camera:"")
+    +(extra?"\nART DIRECTION: "+extra:"");
+
+  const chatText =
+`Génère cette image pour mon Webtoon en respectant strictement le prompt ci-dessous.
+
+IMPORTANT :
+- Préserve exactement l'identité des personnages.
+- Utilise les images de référence des personnages si elles sont jointes à ce message.
+- Ne change pas les traits du visage, les proportions, la coiffure ou les marques distinctives.
+- Respecte la composition, la pose, l'émotion, le décor, les vêtements et le style demandés.
+- Il s'agit d'une case de Webtoon : privilégie une composition cinématographique et lisible.
+
+PROMPT :
+${prompt}`;
+
+  try{
+    await copyToClipboard(chatText);
+    status.textContent=`✅ Prompt prêt pour ChatGPT${refs.length?` avec ${refs.length} référence(s) à joindre`:''}.`;
+  }catch(e){
+    status.textContent="Impossible de copier automatiquement.";
+  }
+}
+
+
+function renderEditor(){
+  let p=project(),panels=(p?.panels||[]).slice().sort((a,b)=>(a.index||0)-(b.index||0)),root=document.getElementById("editorRoot");
+  if(!root)return;
+  if(!panels.length){root.innerHTML='<div class="empty">Aucune case. Crée des scènes puis génère le storyboard.</div>';return}
+  root.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:14px"><div><strong>📱 ${esc(p.title||"Épisode")}</strong><div class="small muted">${panels.length} case(s) · Glisse les cases pour les réordonner</div></div><button class="btn primary" onclick="downloadEpisode()">⬇️ Exporter PNG</button></div><div class="episode-canvas">${panels.map((x,i)=>editorPanelHTML(x,i)).join("")}</div>`;
+}
+function editorPanelHTML(x,i){
+  let bubbles=(x.dialogues||[]).map((d,j)=>`<div class="speech-bubble ${bubbleClass(d.type)}" style="left:${d.x??(j%2?54:8)}%;top:${d.y??(12+j*16)}%;font-size:${d.size||18}px">${esc(d.text||d.content||"")}</div>`).join("");
+  let controls=(x.dialogues||[]).map((d,j)=>bubbleEditorHTML(x.id,d,j)).join("");
+  return `<article class="editor-panel" draggable="true" ondragstart="dragPanel(event,'${x.id}')" ondragover="event.preventDefault()" ondrop="dropPanel(event,'${x.id}')">
+    <div class="editor-toolbar"><strong>CASE ${i+1}</strong><span class="small muted">${(x.dialogues||[]).length} bulle(s)</span><button class="btn" onclick="editPanelText('${x.id}')">💬 Modifier le texte</button><button class="btn" onclick="goGenerate('${x.id}')">🎨 Générer</button></div>
+    <div class="panel-stage">${x.generatedImage?`<img src="${x.generatedImage}" class="panel-image">`:'<div class="panel-placeholder">🖼️ Image non générée<br><span>Appuie sur « Générer ».</span></div>'}${bubbles}</div>
+    <div class="bubble-list">${controls||'<span class="small muted">Aucune bulle. Utilise « Modifier le texte » pour en ajouter.</span>'}</div>
+  </article>`;
+}
+function editPanelText(id){
+  let p=project(),x=p.panels.find(z=>z.id===id);if(!x)return;
+  let value=prompt("Une bulle par ligne :",(x.dialogues||[]).map(d=>d.text||d.content||"").join("\n"));if(value===null)return;
+  x.dialogues=value.split("\n").map(v=>v.trim()).filter(Boolean).map((v,i)=>({
+    id:uid(),text:v,type:(x.dialogues?.[i]?.type||"speech"),x:(x.dialogues?.[i]?.x??8)+(i%2?45:0),y:(x.dialogues?.[i]?.y??12)+i*12,size:x.dialogues?.[i]?.size||18
+  }));
+  save();renderEditor();
+}
+function updateBubble(panelId,bubbleIndex,key,value){
+  let p=project(),x=p.panels.find(z=>z.id===panelId);if(!x||!x.dialogues?.[bubbleIndex])return;
+  x.dialogues[bubbleIndex][key]=value;
+  save();renderEditor();
+}
+function bubbleClass(type){return type==="thought"?"bubble-thought":type==="shout"?"bubble-shout":type==="whisper"?"bubble-whisper":"bubble-speech"}
+function bubbleEditorHTML(panelId,d,index){
+  return `<div class="bubble-controls">
+    <strong>Bulle ${index+1}</strong>
+    <select onchange="updateBubble('${panelId}',${index},'type',this.value)">
+      <option value="speech" ${d.type==="speech"?"selected":""}>💬 Dialogue</option>
+      <option value="thought" ${d.type==="thought"?"selected":""}>💭 Pensée</option>
+      <option value="shout" ${d.type==="shout"?"selected":""}>📣 Cri</option>
+      <option value="whisper" ${d.type==="whisper"?"selected":""}>🤫 Chuchotement</option>
+    </select>
+    <label>X <input type="range" min="0" max="75" value="${d.x??8}" onchange="updateBubble('${panelId}',${index},'x',+this.value)"></label>
+    <label>Y <input type="range" min="0" max="85" value="${d.y??12}" onchange="updateBubble('${panelId}',${index},'y',+this.value)"></label>
+    <label>Taille <input type="range" min="12" max="34" value="${d.size||18}" onchange="updateBubble('${panelId}',${index},'size',+this.value)"></label>
+  </div>`;
+}
+function dragPanel(e,id){e.dataTransfer.setData("panelId",id)}
+function dropPanel(e,targetId){
+  e.preventDefault();let from=e.dataTransfer.getData("panelId");if(!from||from===targetId)return;
+  let p=project(),a=p.panels.findIndex(x=>x.id===from),b=p.panels.findIndex(x=>x.id===targetId);if(a<0||b<0)return;
+  let item=p.panels.splice(a,1)[0];p.panels.splice(b,0,item);p.panels.forEach((x,i)=>x.index=i);save();
+}
+function goGenerate(id){selectedGenerationPanelId=id;go("generation")}
+function loadEpisodeImage(src){return new Promise((res,rej)=>{let im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src})}
+async function downloadEpisode(){
+  let p=project(),panels=(p?.panels||[]).slice().sort((a,b)=>(a.index||0)-(b.index||0));if(!panels.length)return;
+  let width=1080,gap=30,hs=[];for(let x of panels){if(x.generatedImage){try{let im=await loadEpisodeImage(x.generatedImage);hs.push(Math.round(width*im.height/im.width))}catch(e){hs.push(650)}}else hs.push(650)}
+  let c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=width;c.height=hs.reduce((a,b)=>a+b,0)+gap*(panels.length-1);ctx.fillStyle="#111318";ctx.fillRect(0,0,c.width,c.height);
+  let y=0;for(let i=0;i<panels.length;i++){let x=panels[i],h=hs[i];if(x.generatedImage){try{let im=await loadEpisodeImage(x.generatedImage);ctx.drawImage(im,0,y,width,h)}catch(e){}}y+=h+gap}
+  let a=document.createElement("a");a.href=c.toDataURL("image/png");a.download=(p.title||"webtoon-episode").replace(/[^\w-]+/g,"_")+".png";a.click();
+}
+function renderBubbles(){let p=project();bubbleInfo.innerHTML=(p?.scenes||[]).map(s=>`<div class="panel"><strong>${esc(s.title)}</strong><div class="preview" style="margin-top:8px">${esc(s.dialogues||"Aucun dialogue")}</div></div>`).join("<br>")||'<div class="empty">Les dialogues apparaîtront ici.</div>'}
+function downloadProject(){let p=project();let blob=new Blob([JSON.stringify(p,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p?.title||"webtoon-project").replace(/[^a-z0-9_-]+/gi,"_")+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
+renderAll();go("dashboard");
+</script>
+<script>
+(function(){
+  let deferredPrompt=null;
+  const bar=document.createElement("div");
+  bar.id="installBar";
+  bar.innerHTML='<span>📱 Installer Webtoon AI Studio sur cet appareil</span><button class="btn primary" id="installBtn">Installer</button><button class="btn" id="closeInstall">Plus tard</button>';
+  Object.assign(bar.style,{position:"fixed",left:"12px",right:"12px",bottom:"12px",zIndex:"9999",display:"none",padding:"12px",border:"1px solid #30394d",borderRadius:"14px",background:"#121620",boxShadow:"0 12px 35px rgba(0,0,0,.45)",alignItems:"center",gap:"8px",justifyContent:"space-between",flexWrap:"wrap"});
+  document.body.appendChild(bar);
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;bar.style.display="flex";});
+  document.addEventListener("click",e=>{
+    if(e.target.id==="installBtn" && deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;bar.style.display="none";});}
+    if(e.target.id==="closeInstall") bar.style.display="none";
+  });
+  if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+})();
+</script>
+</body>
+</html>
