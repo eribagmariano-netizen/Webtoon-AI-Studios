@@ -1,7 +1,7 @@
 {
   "appId": "com.webtoonai.studio",
   "appName": "Webtoon AI Studio",
-  "webDir": ".",
+  "webDir": "www": ".",
   "server": {
     "androidScheme": "https"
   }
